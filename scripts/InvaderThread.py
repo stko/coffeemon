@@ -35,7 +35,7 @@ class CMSocketChat(threading.Thread):
 						#thisMsg={}
 						#thisMsg['status']='disconnect'
 						#client.sendMessage(dumps(thisMsg))
-						client.sendMessage(command)
+						client.sendMessage(str(command['value']))
 						pass
 
 					except Exception as n:

@@ -42,11 +42,12 @@ if __name__ == '__main__':
 	this_thread.start()
 	thisMsg={}
 	thisMsg['msg']='test'
+	thisMsg['value']=1234
 	while True:
 		time.sleep(1)
 		#data_queue.put(str(u"invader"))
 		print(str(thisMsg))
-		data_queue.put(str(thisMsg))
+		data_queue.put((thisMsg))
 
 		#for client in server.connections.itervalues():
 		#			print ('actual client: '+ client.channel)
