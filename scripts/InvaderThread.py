@@ -6,11 +6,8 @@ except:
 class CMSocketChat(threading.Thread):
 	""" thread running as Websocket chat client to 
 
-	Input is done by placing command (as strings) into the
-	Queue passed in dir_q.
-
-	Output is done by placing tuples into the Queue passed in result_q.
-	Each tuple is (thread name, command, answer).
+	Input is done by placing data objects into the
+	Queue passed in data_queue.
 
 	Ask the thread to stop by calling its join() method.
 	"""
@@ -27,14 +24,7 @@ class CMSocketChat(threading.Thread):
 			try:
 				command = self.data_queue.get(True, 0.05)
 				for client in self.server.connections.values():
-				#for client in self.server.connections:
-				#			print ('actual client: '+ client.channel)
 					try:
-						#if client != self and client.channel == prefix+thisMsg['channel'] :
-						#client.sendMessage(str('{data:{msg:"cCAwIDAgMA0=",channel:"MQ=="}}'))
-						#thisMsg={}
-						#thisMsg['status']='disconnect'
-						#client.sendMessage(dumps(thisMsg))
 						client.sendMessage(str(command['value']))
 						pass
 
@@ -50,9 +40,3 @@ class CMSocketChat(threading.Thread):
 		self.server.close()
 		print (' Thread joined..' )
 		super(CMSocketChat, self).join(timeout)
-
-	def _do_command(self, command):
-		""" Given a directory name, yields the names of all files (not dirs)
-		contained in this directory and its sub-directories.
-		"""
-		return "done..."

@@ -15,35 +15,15 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 '''
 
 import signal, sys, ssl
-import asyncio
 from SimpleWebSocketServer import WebSocket, SimpleWebSocketServer, SimpleSSLWebSocketServer
 from optparse import OptionParser
 from json import loads , dumps
 from base64 import encodestring, decodestring
 
 
-class SimpleEcho(WebSocket):
-
-
-   def handleMessage(self):
-      if self.data is None:
-         self.data = ''
-      
-      try:
-         self.sendMessage(str(self.data))
-      except Exception as n:
-         print (n)
-         
-   def handleConnected(self):
-      print (self.address, 'connected')
-
-   def handleClose(self):
-      print (self.address, 'closed')
-
-
 class SimpleChat(WebSocket):
 
-	async def handleMessage(self):
+	def handleMessage(self):
 		if self.data is not None:
 			try:
 				thisMsg=loads(str(self.data))
@@ -53,14 +33,14 @@ class SimpleChat(WebSocket):
 					thisMsg["echo"] # checks if variable exists
 					thisMsg["echo"]="server"
 					print ("Send echo answer: "+str(thisMsg))
-					await self.sendMessage(dumps(thisMsg))
+					self.sendMessage(dumps(thisMsg))
 				except:
 					pass
-				async for client in self.server.connections.itervalues():
+				for client in self.server.connections.values():
 			#			print ('actual client: '+ client.channel)
 					try:
 						if client != self and client.channel == prefix+thisMsg['channel'] :
-							await client.sendMessage(str(self.data))
+							client.sendMessage(str(self.data))
 					except Exception as n:
 						print ("Send Exception: " ,n)
 					
@@ -97,36 +77,3 @@ class SimpleChat(WebSocket):
 						print (channel , 'send close message')
 				except Exception as n:
 					print ("Send Exception: " ,n)
-	
- 
-
-if __name__ == "__main__":
-
-   parser = OptionParser(usage="usage: %prog [options]", version="%prog 1.0")
-   parser.add_option("--host", default='localhost', type='string', action="store", dest="host", help="hostname (localhost)")
-   parser.add_option("--port", default=9000, type='int', action="store", dest="port", help="port (9000)")
-   parser.add_option("--example", default='chat', type='string', action="store", dest="example", help="echo, chat")
-   parser.add_option("--ssl", default=0, type='int', action="store", dest="ssl", help="ssl (1: on, 0: off (default))")
-   parser.add_option("--cert", default='./cert.pem', type='string', action="store", dest="cert", help="cert (./cert.pem)")
-   parser.add_option("--ver", default=ssl.PROTOCOL_TLSv1, type=int, action="store", dest="ver", help="ssl version")
-   
-   (options, args) = parser.parse_args()
-
-   cls = SimpleEcho
-   if options.example == 'chat':
-      cls = SimpleChat	
-
-   if options.ssl == 1:
-      server = SimpleSSLWebSocketServer(options.host, options.port, cls, options.cert, options.cert, version=options.ver)
-   else:	
-      server = SimpleWebSocketServer(options.host, options.port, cls)
-
-   def close_sig_handler(signal, frame):
-      server.close()
-      sys.exit()
-
-   signal.signal(signal.SIGINT, close_sig_handler)
-
-   while(True):
-      #server.serveforever()
-      server.servesingle()
