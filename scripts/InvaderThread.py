@@ -3,6 +3,7 @@ try:
 	import Queue as q
 except:
 	import queue as q
+from json import loads , dumps
 class CMSocketChat(threading.Thread):
 	""" thread running as Websocket chat client to 
 
@@ -25,7 +26,7 @@ class CMSocketChat(threading.Thread):
 				command = self.data_queue.get(True, 0.05)
 				for client in self.server.connections.values():
 					try:
-						client.sendMessage(str(command['value']))
+						client.sendMessage(dumps(command))
 						pass
 
 					except Exception as n:

@@ -22,27 +22,45 @@ from base64 import encodestring, decodestring
 
 
 class SimpleChat(WebSocket):
-
 	def handleMessage(self):
+		print ("Actual Server value chat handler:{}".format(self.server.getActualValue()));
+
 		if self.data is not None:
 			try:
 				thisMsg=loads(str(self.data))
 				print ('message: '+str(self.data))
-				# handle a runtime measuring echo request
 				try:
-					thisMsg["echo"] # checks if variable exists
-					thisMsg["echo"]="server"
-					print ("Send echo answer: "+str(thisMsg))
-					self.sendMessage(dumps(thisMsg))
+					self.channel # has the client already it's channel assigned?
 				except:
-					pass
-				for client in self.server.connections.values():
-			#			print ('actual client: '+ client.channel)
-					try:
-						if client != self and client.channel == prefix+thisMsg['channel'] :
-							client.sendMessage(str(self.data))
-					except Exception as n:
-						print ("Send Exception: " ,n)
+					self.channel=self.server.base64ToString(thisMsg["channel"])
+					for client in self.server.connections.values():
+				#			print ('actual client: '+ client.channel)
+						try:
+							if client != self :
+								client.sendMessage(dumps({'msg': self.server.stringToBase64(self.channel+" joins the chat")}))
+						except Exception as n:
+							print ("Send join msg Exception: " ,n)
+					
+				# handle an actual value request
+				try:
+					thisMsg["value"] # checks if variable exists
+					print ('message contains value: '+str(self.data))
+					print ('server stores value: {}'.format(self.server.getActualValue()))
+					thisMsg["value"]=self.server.getActualValue()
+					print ('message set value: '+str(self.data))
+					print ("Send value answer: "+str(thisMsg))
+					self.sendMessage(dumps(thisMsg))
+				except: # it's a normal chat message
+					#add channel name to message
+					thisMsg["msg"]=self.server.stringToBase64(self.channel+": "+self.server.base64ToString(thisMsg["msg"]))
+					for client in self.server.connections.values():
+				#			print ('actual client: '+ client.channel)
+						try:
+							if client != self :
+								#client.sendMessage(str(self.data))
+								client.sendMessage(dumps(thisMsg))
+						except Exception as n:
+							print ("Send normal msg Exception: " ,n)
 					
 			except Exception as n:
 				print ("Exception: " , n)
@@ -57,23 +75,12 @@ class SimpleChat(WebSocket):
 	def handleClose(self):
 		print (self.address, 'closed')
 		channel=""
-		for client in self.server.connections.itervalues():
-			if client.address==self.address:
-				channel=client.channel[1:]
-				print (channel , 'channel closed')
-		userCount=0
-		for client in self.server.connections.itervalues():
-			if client != self and client.channel == 's'+channel :
-				userCount+=1
-		print (userCount , 'usercount')
-		if userCount<1:
-			for client in self.server.connections.itervalues():
-	#			print 'actual client: '+ client.channel
+		for client in self.server.connections.values():
+			if client != self :
+				thisMsg={}
+				thisMsg['status']='disconnect'
 				try:
-					if client != self and client.channel == 'r'+channel :
-						thisMsg={}
-						thisMsg['status']='disconnect'
-						client.sendMessage(dumps(thisMsg))
-						print (channel , 'send close message')
+					#client.sendMessage(dumps(thisMsg))
+					client.sendMessage(dumps({'msg': self.server.stringToBase64(self.channel+" left the chat")}))
 				except Exception as n:
-					print ("Send Exception: " ,n)
+					print ("Send left msg Exception: " ,n)

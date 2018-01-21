@@ -38,7 +38,7 @@ var lastEchoTime=0;
 
   function onOpen(evt)
   {
-	doSend(JSON.stringify({msg:  btoa(document.myform.keytext.value+ " enters the coffee kitchen"), channel: btoa(document.myform.keytext.value)})  );
+	//doSend(JSON.stringify({msg:  btoa(document.myform.keytext.value+ " enters the coffee kitchen"), channel: btoa(document.myform.keytext.value)})  );
         localStorage && (localStorage.url = document.myform.url.value);
         localStorage && (localStorage.keytext = document.myform.keytext.value);
 
@@ -67,20 +67,19 @@ var lastEchoTime=0;
   {
   console.log(evt);
   console.log(evt.data);
-   writeToScreen("1:"+evt.data+"\n");
-
-
 	try {
 		obj = JSON.parse(evt.data);
 		  console.log(evt.data);
 
-		writeToScreen("obj:"+obj.msg+"\n");
 		arrivingTime=Date.now();
-		if (obj.reply){
-			writeToScreen(atob(obj.reply));
+		if (obj.value){
+			writeToScreen(atob(obj.value));
+		}
+		if (obj.status){
+			writeToScreen(atob(obj.status));
 		}
 		if (obj.msg){
-			writeToScreen(atob(obj.msg));
+			writeToScreen(document.myform.keytext.value+": "+atob(obj.msg));
 		}
 	}
 	catch(err){
@@ -126,7 +125,7 @@ var lastEchoTime=0;
    }
 
   function doEcho() {
-		var msg=JSON.stringify({echo: "", msg: "", channel: btoa(document.myform.keytext.value)}); 
+		var msg=JSON.stringify({value: "", msg: "", channel: btoa(document.myform.keytext.value)}); 
 		doSend(msg  );
    }
 

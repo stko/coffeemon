@@ -6,8 +6,73 @@ except:
 import threading
 from optparse import OptionParser
 from json import loads , dumps
+#from base64 import encodestring, decodestring
+import base64
+
 import InvaderThread
 from wsserver import SimpleSSLWebSocketServer, SimpleWebSocketServer,SimpleChat
+
+class SimpleCoffeeMonServer(SimpleWebSocketServer):
+	def setActualValue(self,actual_value):
+		self.actual_value=actual_value
+		print("Server value set to {}".format(self.actual_value))
+	def getActualValue(self):
+		return self.actual_value
+	def stringToBase64(self,s):
+		'''
+			The hell of type conversion!!!
+			When using str() without charset parameter it generates a binary string type, see https://docs.python.org/3/library/stdtypes.html#str
+			
+			>>> str(b'Zoot!')
+			"b'Zoot!'"
+			>>> str(b'Zoot!',"ascii")
+			'Zoot!'
+			>>> str(b'Zoot!',"utf8")
+			'Zoot!'
+
+			where the binary type make the websocket interface to generate a blob object websocket packet instead of a TEXT object,
+			which then finally crashes in the browser client, which expect TEXT, but no binary blob
+			
+			That gave two days of debugging, so it's better to drop this down as a note here ;-)
+		
+		'''
+		return str(base64.b64encode(s.encode('utf-8')),'utf-8')
+
+	def base64ToString(self,b):
+		return base64.b64decode(b).decode('utf-8')
+
+
+	
+class SSLCoffeeMonServer(SimpleSSLWebSocketServer):
+	def setActualValue(self,actual_value):
+		self.actual_value=actual_value
+		print("Server value set to {}".format(self.actual_value))
+	def getActualValue(self):
+		return self.actual_value
+	def stringToBase64(self,s):
+		'''
+			The hell of type conversion!!!
+			When using str() without charset parameter it generates a binary string type, see https://docs.python.org/3/library/stdtypes.html#str
+			
+			>>> str(b'Zoot!')
+			"b'Zoot!'"
+			>>> str(b'Zoot!',"ascii")
+			'Zoot!'
+			>>> str(b'Zoot!',"utf8")
+			'Zoot!'
+
+			where the binary type make the websocket interface to generate a blob object websocket packet instead of a TEXT object,
+			which then finally crashes in the browser client, which expect TEXT, but no binary blob
+			
+			That gave two days of debugging, so it's better to drop this down as a note here ;-)
+		
+		'''
+		return str(base64.b64encode(s.encode('utf-8')),'utf-8')
+
+	def base64ToString(self,b):
+		return str(base64.b64decode(b).decode('utf-8'),'utf-8')
+
+
 
 	
 if __name__ == '__main__':
@@ -22,9 +87,9 @@ if __name__ == '__main__':
 	(options, args) = parser.parse_args()	
 
 	if options.ssl == 1:
-		server = SimpleSSLWebSocketServer(options.host, options.port, SimpleChat, options.cert, options.cert, version=options.ver)
+		server = SSLCoffeeMonServer(options.host, options.port, SimpleChat, options.cert, options.cert, version=options.ver)
 	else:	
-		server = SimpleWebSocketServer(options.host, options.port, SimpleChat)
+		server = SimpleCoffeeMonServer(options.host, options.port, SimpleChat)
 
 	def close_sig_handler(signal, frame):
 		this_thread.join()
@@ -35,9 +100,13 @@ if __name__ == '__main__':
 	this_thread=InvaderThread.CMSocketChat(server,data_queue)
 	this_thread.start()
 	thisMsg={}
-	thisMsg['msg']='test'
-	thisMsg['value']=1234
+	thisMsg['msg']=server.stringToBase64('test')
+	thisMsg['state']=1234
+	server.setActualValue(8899)
+	print ("Actual Server value main task:{}".format(server.actual_value));
+	print ("Actual Server value main task:{}".format(server.getActualValue()));
+	
 	while True:
-		time.sleep(1)
-		print(str(thisMsg))
+		time.sleep(5)
+		#print(str(thisMsg))
 		data_queue.put((thisMsg))
