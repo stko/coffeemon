@@ -1,15 +1,12 @@
 import os, time, ssl, signal, sys
-try:
-	import Queue as q
-except:
-	import queue as q
+import queue as q
 import threading
 from optparse import OptionParser
 from json import loads , dumps
 #from base64 import encodestring, decodestring
 import base64
 
-import InvaderThread
+import wsserverthread
 from wsserver import SimpleSSLWebSocketServer, SimpleWebSocketServer,SimpleChat
 
 class SimpleCoffeeMonServer(SimpleWebSocketServer):
@@ -95,7 +92,7 @@ if __name__ == '__main__':
 
 	signal.signal(signal.SIGINT, close_sig_handler)
 	data_queue = q.Queue()
-	this_thread=InvaderThread.CMSocketChat(server,data_queue)
+	this_thread=wsserverthread.CMSocketChat(server,data_queue)
 	this_thread.start()
 	thisMsg={}
 	thisMsg['msg']=server.stringToBase64('test')

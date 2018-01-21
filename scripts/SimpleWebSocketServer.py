@@ -22,7 +22,6 @@ import errno
 import codecs
 from collections import deque
 from select import select
-from pprint import pprint
 
 __all__ = ['WebSocket',
             'SimpleWebSocketServer',
@@ -580,7 +579,6 @@ class SimpleWebSocketServer(object):
       self.serversocket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
       self.serversocket.bind((host, port))
       self.serversocket.listen(5)
-      pprint ( self.serversocket)
       self.selectInterval = selectInterval
       self.connections = {}
       self.listeners = [self.serversocket]

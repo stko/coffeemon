@@ -23,8 +23,6 @@ from base64 import encodestring, decodestring
 
 class SimpleChat(WebSocket):
 	def handleMessage(self):
-		print ("Actual Server value chat handler:{}".format(self.server.getActualValue()));
-
 		if self.data is not None:
 			try:
 				thisMsg=loads(str(self.data))
@@ -36,7 +34,6 @@ class SimpleChat(WebSocket):
 					if len(self.server.connections)>1:
 						self.sendMessage(dumps({'msg': self.server.stringToBase64("Also in the chat: ")}))
 					for client in self.server.connections.values():
-				#			print ('actual client: '+ client.channel)
 						try:
 							if client != self :
 								client.sendMessage(dumps({'msg': self.server.stringToBase64(self.channel+" joins the chat \n")}))
@@ -50,17 +47,12 @@ class SimpleChat(WebSocket):
 				# handle an actual value request
 				try:
 					thisMsg["value"] # checks if variable exists
-					print ('message contains value: '+str(self.data))
-					print ('server stores value: {}'.format(self.server.getActualValue()))
 					thisMsg["value"]=self.server.getActualValue()
-					print ('message set value: '+str(self.data))
-					print ("Send value answer: "+str(thisMsg))
 					self.sendMessage(dumps(thisMsg))
 				except: # it's a normal chat message
 					#add channel name to message
 					thisMsg["msg"]=self.server.stringToBase64(self.channel+": "+self.server.base64ToString(thisMsg["msg"]))
 					for client in self.server.connections.values():
-				#			print ('actual client: '+ client.channel)
 						try:
 							if client != self :
 								#client.sendMessage(str(self.data))

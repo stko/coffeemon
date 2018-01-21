@@ -1,8 +1,5 @@
 import threading
-try:
-	import Queue as q
-except:
-	import queue as q
+import queue as q
 from json import loads , dumps
 class CMSocketChat(threading.Thread):
 	""" thread running as Websocket chat client to 
@@ -19,7 +16,6 @@ class CMSocketChat(threading.Thread):
 		self.is_runnning=True
 
 	def run(self):
-		print (' Thread starts..' )
 		while(self.is_runnning):
 			self.server.serveonce()
 			try:
@@ -34,10 +30,7 @@ class CMSocketChat(threading.Thread):
 			except q.Empty:
 				continue
 
-		print (' Thread dies..' )
-
 	def join(self, timeout=None):
 		self.is_runnning=False
 		self.server.close()
-		print (' Thread joined..' )
 		super(CMSocketChat, self).join(timeout)
