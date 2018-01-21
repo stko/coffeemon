@@ -33,14 +33,20 @@ class SimpleChat(WebSocket):
 					self.channel # has the client already it's channel assigned?
 				except:
 					self.channel=self.server.base64ToString(thisMsg["channel"])
+					if len(self.server.connections)>1:
+						self.sendMessage(dumps({'msg': self.server.stringToBase64("Also in the chat: ")}))
 					for client in self.server.connections.values():
 				#			print ('actual client: '+ client.channel)
 						try:
 							if client != self :
-								client.sendMessage(dumps({'msg': self.server.stringToBase64(self.channel+" joins the chat")}))
+								client.sendMessage(dumps({'msg': self.server.stringToBase64(self.channel+" joins the chat \n")}))
+								self.sendMessage(dumps({'msg': self.server.stringToBase64(client.channel+" ")}))
 						except Exception as n:
 							print ("Send join msg Exception: " ,n)
-					
+					if len(self.server.connections)>1:
+						self.sendMessage(dumps({'msg': self.server.stringToBase64("\n")}))
+
+					return # as this must be the initial channel announce message from the client to the server, no further handling
 				# handle an actual value request
 				try:
 					thisMsg["value"] # checks if variable exists
@@ -81,6 +87,6 @@ class SimpleChat(WebSocket):
 				thisMsg['status']='disconnect'
 				try:
 					#client.sendMessage(dumps(thisMsg))
-					client.sendMessage(dumps({'msg': self.server.stringToBase64(self.channel+" left the chat")}))
+					client.sendMessage(dumps({'msg': self.server.stringToBase64(self.channel+" left the chat\n")}))
 				except Exception as n:
 					print ("Send left msg Exception: " ,n)

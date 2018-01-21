@@ -15,7 +15,6 @@ from wsserver import SimpleSSLWebSocketServer, SimpleWebSocketServer,SimpleChat
 class SimpleCoffeeMonServer(SimpleWebSocketServer):
 	def setActualValue(self,actual_value):
 		self.actual_value=actual_value
-		print("Server value set to {}".format(self.actual_value))
 	def getActualValue(self):
 		return self.actual_value
 	def stringToBase64(self,s):
@@ -46,7 +45,6 @@ class SimpleCoffeeMonServer(SimpleWebSocketServer):
 class SSLCoffeeMonServer(SimpleSSLWebSocketServer):
 	def setActualValue(self,actual_value):
 		self.actual_value=actual_value
-		print("Server value set to {}".format(self.actual_value))
 	def getActualValue(self):
 		return self.actual_value
 	def stringToBase64(self,s):
@@ -103,10 +101,6 @@ if __name__ == '__main__':
 	thisMsg['msg']=server.stringToBase64('test')
 	thisMsg['state']=1234
 	server.setActualValue(8899)
-	print ("Actual Server value main task:{}".format(server.actual_value));
-	print ("Actual Server value main task:{}".format(server.getActualValue()));
-	
 	while True:
 		time.sleep(5)
-		#print(str(thisMsg))
 		data_queue.put((thisMsg))
