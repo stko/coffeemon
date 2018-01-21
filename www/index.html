@@ -76,8 +76,9 @@ var lastEchoTime=0;
 		if (obj.value){
 			writeToScreen(obj.value);
 		}
-		if (obj.status){
-			writeToScreen(atob(obj.status));
+		if (obj.state){
+			writeToScreen(atob(obj.state));
+			notifyMe();
 		}
 		if (obj.msg){
 			writeToScreen(atob(obj.msg));
@@ -137,6 +138,36 @@ var lastEchoTime=0;
 		websocket.close();
    }
 
+   
+	// request permission on page load
+	document.addEventListener('DOMContentLoaded', function () {
+		if (!Notification) {
+			alert('Desktop notifications not available in your browser. Try Chromium.'); 
+			return;
+		}
+
+		if (Notification.permission !== "granted")
+			Notification.requestPermission();
+	});
+
+	function notifyMe() {
+		console.log("enter notify");
+		if (Notification.permission !== "granted")
+			Notification.requestPermission();
+		else {
+			var notification = new Notification('Notification title', {
+			icon: 'noun_166691_cc.svg',
+			body: "Hey there! You've been notified!",
+			});
+
+			
+			notification.onclick = function () {
+			window.open("http://stackoverflow.com/a/13328397/1269037");      
+		};
+		}
+		console.log("leave notify");
+		
+	}
 
 </script>
 
@@ -206,7 +237,7 @@ function notifyMe() {
     Notification.requestPermission();
   else {
     var notification = new Notification('Notification title', {
-      icon: 'http://cdn.sstatic.net/stackexchange/img/logos/so/so-icon.png',
+      icon: 'noun_166691_cc.svg',
       body: "Hey there! You've been notified!",
     });
 
