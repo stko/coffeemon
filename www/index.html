@@ -138,6 +138,11 @@ var lastEchoTime=0;
 		websocket.close();
    }
 
+   var infoWindow = null;
+
+	function openInfo() {
+		infoWindow= window.open('info.html', 'infowindow','toolbar=0,scrollbars=0,location=0,statusbar=0,menubar=0,resizable=0,width=200,height=400');
+	}
    
 	// request permission on page load
 	document.addEventListener('DOMContentLoaded', function () {
@@ -152,6 +157,11 @@ var lastEchoTime=0;
 
 	function notifyMe() {
 		console.log("enter notify");
+		if (infoWindow){
+				console.log("swap logo");
+
+			infoWindow.document.getElementById("swap").src = "empty.png";
+		}
 		if (Notification.permission !== "granted")
 			Notification.requestPermission();
 		else {
@@ -161,13 +171,14 @@ var lastEchoTime=0;
 			});
 
 			
-			notification.onclick = function () {
-			window.open("http://stackoverflow.com/a/13328397/1269037");      
-		};
+			//notification.onclick = function () {
+			//window.open("http://stackoverflow.com/a/13328397/1269037");      
+			//};
 		}
 		console.log("leave notify");
 		
 	}
+
 
 </script>
 
@@ -198,6 +209,7 @@ Chat nickname (min. 4 chars): <input name="keytext" type="text" value="aa" size=
 <input type="button" name=clearButton value="Clear" onClick="clearText();">
 <input type="button" name=echoButton value="Read actual weight value" onClick="doEcho();">
 <input type="button" name=disconnectButton value="Disconnect" onClick="doDisconnect();">
+<input type="button" name=InfoWin value="Open Info" onClick="openInfo();">
 </p>
 <hr>
 
