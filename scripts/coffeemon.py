@@ -96,8 +96,13 @@ if __name__ == '__main__':
 	this_thread.start()
 	thisMsg={}
 	thisMsg['msg']=server.stringToBase64('test')
-	thisMsg['state']=1234
+	states=["full","normal","empty","nopot"]
+	stCount=0
 	server.setActualValue(8899)
 	while True:
 		time.sleep(5)
+		thisMsg['state']=states[stCount]
+		stCount+=1
+		if stCount>=len(states):
+			stCount=0
 		data_queue.put((thisMsg))

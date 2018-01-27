@@ -77,8 +77,18 @@ var lastEchoTime=0;
 			writeToScreen(obj.value);
 		}
 		if (obj.state){
-			writeToScreen(atob(obj.state));
-			notifyMe();
+		console.log("state detected"+obj.state);
+			var x = document.getElementById(obj.state);
+			if (x){ // simple: name the icons like the checkboxes like the states itself. Saves much work :-)
+				writeToScreen(obj.state);
+				if (infoWindow){
+					console.log("swap logo");
+					infoWindow.document.getElementById("swap").src = obj.state+".png";
+				}
+				if (x.checked){ 
+					notifyMe();
+				}
+			}
 		}
 		if (obj.msg){
 			writeToScreen(atob(obj.msg));
@@ -141,7 +151,7 @@ var lastEchoTime=0;
    var infoWindow = null;
 
 	function openInfo() {
-		infoWindow= window.open('info.html', 'infowindow','toolbar=0,scrollbars=0,location=0,statusbar=0,menubar=0,resizable=0,width=200,height=400');
+		infoWindow= window.open('info.html', 'infowindow','toolbar=0,scrollbars=0,location=0,statusbar=0,menubar=0,resizable=0,width=130,height=130');
 	}
    
 	// request permission on page load
@@ -157,11 +167,6 @@ var lastEchoTime=0;
 
 	function notifyMe() {
 		console.log("enter notify");
-		if (infoWindow){
-				console.log("swap logo");
-
-			infoWindow.document.getElementById("swap").src = "empty.png";
-		}
 		if (Notification.permission !== "granted")
 			Notification.requestPermission();
 		else {
@@ -212,6 +217,11 @@ Chat nickname (min. 4 chars): <input name="keytext" type="text" value="aa" size=
 <input type="button" name=InfoWin value="Open Info" onClick="openInfo();">
 </p>
 <hr>
+Notifications:<br>
+<input type="checkbox" id="full"><label for="full"> Full Pot</label><br>
+<input type="checkbox" id="normal"><label for="normal"> Normal Pot</label><br>
+<input type="checkbox" id="empty"><label for="empty"> Empty Pot</label><br>
+<input type="checkbox" id="nopot"><label for="nopot"> No Pot</label><br>
 
 <h2>Output</h2>
 <p>
