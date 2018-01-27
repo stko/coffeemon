@@ -1,24 +1,9 @@
-
-
 <?php
-// the dynDNS variables shall be
-// ip
-// username
-// password
- 
- 
-     if($_GET['password']=="meinpasswort")
-     {
-         $handle=fopen("link.html","w+");
-	 $myip=$_GET['ip'];
-         fputs($handle,'<html><body><a href="ftp://'.$myip.'">ftp://'.$myip.'</a><p>'.$myip.'<body><html>');
-         fclose($handle);
-     }
 
+// the only configuration: set your IoT device registration password here:
 
+$passwd="passwort";
 
-$ini_array = parse_ini_file("sample.ini");
-print_r($ini_array);
 
 function write_php_ini($array, $file)
 {
@@ -52,7 +37,44 @@ function safefilerewrite($fileName, $dataToSave)
         }
         fclose($fp);
     }
-
 }
 
+if (isset($_GET['name']))
+{
+	// the GET variables shall be
+	// url
+	// name
+	// password
+	$iniFileName="settings.ini";
+	$ini_array = parse_ini_file($iniFileName);
+	// request to store IP
+	if($_GET['password']==$passwd and isset($_GET['url']))
+	{
+		$ini_array[$_GET['name']]=$_GET['url'];
+		write_php_ini($ini_array, $iniFileName);
+		echo "Device registered as ".$_GET['name']. " with the URL " .$_GET['url'];
+	}else{
+		if(isset($ini_array[$_GET['name']]))
+		{
+			header("Location: ".$ini_array[$_GET['name']]);
+			die();
+		}else{
+			echo "Unknown Device: ".$_GET['name'];
+		}
+	}
+}else{
+?>
+<html>
+<body>
+<h2>Simple URL Redirector</h2>
+Let you register IoT devices with changing IP addresses on a server with fixed URL:
+<p>
+<h3>Usage</h3>
+To register a device, call this page with a GET call containing the parameters: name: The name the device should be reached by /url: the urlencoded URL to which it should be redirected to / password= the password as configured
+<p>
+To get forwarded to a registered device, call this page with a GET call containing the parameter name: The name the device should be reached by
+</body>
+</html>
+<?php
+}
 ?>
