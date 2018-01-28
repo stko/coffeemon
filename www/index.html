@@ -24,7 +24,7 @@ var lastRecvStatus="normal"
 
   function init()
   {
-	if (wsURL==null){
+	if (wsURL==null || wsURL=""){
 	//split a whole URL: var full = location.protocol+'//'+location.hostname+(location.port ? ':'+location.port: '');
 		wsURL = 'ws://'+location.hostname+ ':9000';
 	}
