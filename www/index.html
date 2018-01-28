@@ -19,6 +19,7 @@
 
 		}
 var wsURL=getParameterByName('wsurl');
+var infoWindow = null;
 
 
   function init()
@@ -35,9 +36,8 @@ var wsURL=getParameterByName('wsurl');
 	var i;
 	for (i = 0; i < x.length; i++) {
 		var cb=x[i];
-		console.log(cb.id+" has been loaded");
 		if (localStorage && cb.id in localStorage) {
-			cb.checked = localStorage[cb.id]
+			cb.checked = localStorage[cb.id]=='true';
 		}
   	}
 	document.myform.inputtext.value = ""
@@ -46,6 +46,15 @@ var wsURL=getParameterByName('wsurl');
 	document.myform.echoButton.disabled = true;
  	document.myform.inputtext.disabled = true;
  	doConnect();
+ 	window.onbeforeunload = function(e) {
+		var dialogText = 'Dialog text here';
+		e.returnValue = dialogText;
+		if(infoWindow){
+			infoWindow.close();
+		}
+		//return dialogText;
+		return null; // avoids "ok to close?" message
+		};
   }
   
   function handleClick(cb){
@@ -169,7 +178,6 @@ var wsURL=getParameterByName('wsurl');
 		websocket.close();
    }
 
-   var infoWindow = null;
 
 	function openInfo() {
 		infoWindow= window.open('info.html', 'infowindow','toolbar=0,scrollbars=0,location=0,statusbar=0,menubar=0,resizable=0,width=130,height=130');
@@ -265,8 +273,13 @@ send text: <input name="inputtext" type="text" size="30" maxlength="30" onkeyup=
 </p>
 
 </form>
-
+Credits:
+The chat icons are
 <a href='https://www.freepik.com/free-vector/social-media-flat-icon-set_841696.htm'>Designed by Freepik</a>
+<br>
+The original Coffee Maker symbol is <a href='https://thenounproject.com/inspign/'>(cc) by Aaron K. Kim from the Noun Project</a>
+<br>Coffeemon itself is Open Source and <a href='https://github.com/stko/coffeemon'>hosted on Github<img src='GitHub-Mark-32px.png'></a>
+
 </body>
 </html> 
 
