@@ -37,6 +37,7 @@ class SimpleChat(WebSocket):
 						try:
 							if client != self :
 								client.sendMessage(dumps({'msg': self.server.stringToBase64(self.channel+" joins the chat \n")}))
+								client.sendMessage(dumps({'state': 'join', 'msg': self.server.stringToBase64(self.channel+" joins the chat \n")}))
 								self.sendMessage(dumps({'msg': self.server.stringToBase64(client.channel+" ")}))
 						except Exception as n:
 							print ("Send join msg Exception: " ,n)
@@ -80,5 +81,6 @@ class SimpleChat(WebSocket):
 				try:
 					#client.sendMessage(dumps(thisMsg))
 					client.sendMessage(dumps({'msg': self.server.stringToBase64(self.channel+" left the chat\n")}))
+					client.sendMessage(dumps({'state':'leave','msg': self.server.stringToBase64(self.channel+" left the chat\n")}))
 				except Exception as n:
 					print ("Send left msg Exception: " ,n)

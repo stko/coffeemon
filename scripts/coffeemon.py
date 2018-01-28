@@ -102,6 +102,7 @@ if __name__ == '__main__':
 	while True:
 		time.sleep(5)
 		thisMsg['state']=states[stCount]
+		thisMsg['msg']=server.stringToBase64('Level has changed')
 		stCount+=1
 		if stCount>=len(states):
 			stCount=0
