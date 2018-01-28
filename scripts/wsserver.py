@@ -47,6 +47,15 @@ class SimpleChat(WebSocket):
 					return # as this must be the initial channel announce message from the client to the server, no further handling
 				# handle an actual value request
 				try:
+					thisMsg["state"] # checks if variable exists
+					thisMsg['state']=self.server.getActualState()
+					thisMsg['msg']=server.stringToBase64('Level has changed')
+					self.sendMessage(dumps(thisMsg))
+					return # no further handling
+				except:
+					pass
+				# handle an actual state request
+				try:
 					thisMsg["value"] # checks if variable exists
 					thisMsg["value"]=self.server.getActualValue()
 					self.sendMessage(dumps(thisMsg))

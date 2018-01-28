@@ -20,7 +20,7 @@
 		}
 var wsURL=getParameterByName('wsurl');
 var infoWindow = null;
-
+var lastRecvStatus="normal"
 
   function init()
   {
@@ -170,6 +170,11 @@ var infoWindow = null;
 		doSend(msg  );
    }
 
+  function doState() {
+		var msg=JSON.stringify({state: "", channel: btoa(document.myform.keytext.value)}); 
+		doSend(msg  );
+   }
+
   function clearText() {
 		document.myform.outputtext.value = "";
    }
@@ -180,7 +185,8 @@ var infoWindow = null;
 
 
 	function openInfo() {
-		infoWindow= window.open('info.html', 'infowindow','toolbar=0,scrollbars=0,location=0,statusbar=0,menubar=0,resizable=0,width=130,height=130');
+		infoWindow= window.open('info.html', 'infowindow','toolbar=0,scrollbars=0,location=0,statusbar=0,menubar=0,resizable=0,width=130,height=135');
+		if (infoWindow) doState();
 	}
    
 	// request permission on page load
@@ -223,21 +229,12 @@ var infoWindow = null;
 </head>
 <body>
 <h2>CoffeeMon - the Coffee Pot Status Monitor</h2>
-
-Want to know the filling level of the office coffee pot?? Just connect to the Coffee Pot Status Monitor and be informed!<br>
-
-
-<div id="output"></div>
-
+<p>
+Want to know the filling level of the office coffee pot?? Just connect to the Coffee Pot Status Monitor and be informed!
+</p>
 <form name="myform">
-<h3>Settings:</h3>
-
-<p> Coffee Pot Status Monitor Server URL: 
-
-
-<p>
-Chat nickname (min. 4 chars): <input name="keytext" type="text" value="aa" size="30" maxlength="140" onkeyup="document.myform.connectButton.disabled=this.value.length<4"></p>
-<p>
+Chat nickname (min. 4 chars): <input name="keytext" type="text" value="aa" size="30" maxlength="140" onkeyup="document.myform.connectButton.disabled=this.value.length<4">
+<br/>
 
 <!--
 <input type="button" name=sendButton value="Send" onClick="sendText();">
@@ -247,6 +244,14 @@ Chat nickname (min. 4 chars): <input name="keytext" type="text" value="aa" size=
 <input type="button" name=echoButton value="Read actual weight value" onClick="doEcho();">
 <input type="button" name=disconnectButton value="Disconnect" onClick="doDisconnect();">
 <input type="button" name=InfoWin value="Open Monitor" onClick="openInfo();">
+</p>
+
+<h3>Messages</h3>
+<p>
+send text: <input name="inputtext" type="text" size="30" maxlength="30" onkeyup="if (event.keyCode == 13) { sendText(); return false; }">
+</p>
+<p>
+<textarea name="outputtext" rows="20" cols="50"></textarea>
 </p>
 <hr>
 Notifications:<br>
@@ -258,22 +263,9 @@ Notifications:<br>
 <input type="checkbox" id="leave" class="cb" onclick='handleClick(this);'><label for="leave"> Somebody leaves the chat</label><br>
 <input type="checkbox" id="write" class="cb" onclick='handleClick(this);'><label for="write"> Somebody writes</label><br>
 
-<h2>Output</h2>
-<p>
-<textarea name="outputtext" rows="20" cols="50"></textarea>
-</p>
-<p>
-<!--
-<textarea name="inputtext" cols="50"></textarea>
--->
-<!--
-Firmware command: <input name="inputtext" type="text" size="30" maxlength="30" onkeyup="if (event.keyCode == 13) { sendText(); document.myform.inputtext.value=''; return false; }">
--->
-send text: <input name="inputtext" type="text" size="30" maxlength="30" onkeyup="if (event.keyCode == 13) { sendText(); return false; }">
-</p>
-
 </form>
-Credits:
+<hr>
+<h3>Credits</h3>
 The chat icons are
 <a href='https://www.freepik.com/free-vector/social-media-flat-icon-set_841696.htm'>Designed by Freepik</a>
 <br>
@@ -282,6 +274,5 @@ The original Coffee Maker symbol is <a href='https://thenounproject.com/inspign/
 
 </body>
 </html> 
-
 
 
