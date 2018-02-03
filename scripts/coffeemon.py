@@ -112,7 +112,10 @@ if __name__ == '__main__':
 		for line in file:
 			fields = line.strip().split('=')
 			print (fields[0], fields[1])
-			settings[fields[0]]=float(fields[1])
+			try: # some of the settings are no numbers..
+				settings[fields[0]]=float(fields[1])
+			except:
+				pass
 		doMeasuring=doMeasure
 	except:
 		print("couldn't open settings, run in Demo mode")

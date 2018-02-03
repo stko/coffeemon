@@ -1,4 +1,17 @@
 #!/bin/bash
+REDIR=$(grep -i redirURL $1 | cut -d = -f 2)
+NAME=$(grep -i name $1 | cut -d = -f 2)
+PASSWORD=$(grep -i password $1 | cut -d = -f 2)
+WSURL=$(grep -i wsurl $1 | cut -d = -f 2)
+PORT=$(grep -i port $1 | cut -d = -f 2)
+
+
+if [ -z "$REDIR" -o -z "$NAME" -o -z "$PASSWORD" ]; then
+        exit 0
+fi
+if [ -z "$PORT"  ]; then
+        PORT=80
+fi
 MYIP=$(ifconfig eth0 | grep -i "inet ad" | cut -d ':' -f 2 | cut -d ' ' -f 1)
 
 # automated url encoding thanks to https://stackoverflow.com/a/10660730
@@ -24,17 +37,15 @@ rawurlencode() {
 
 WSURLENC=$( rawurlencode "$WSURL" )
 ### if your iot web server does not straigt under in the web root on port 80, configure it here
-IOTURL=http://$MYIP?wsurl=$WSURLENC
+IOTURL=http://$MYIP:$PORT?wsurl=$WSURLENC
 
 ### set your device name & password here
-NAME=cm1
-PASSWORD=passwort
-
 
 IOTURLENC=$( rawurlencode "$IOTURL" )
-
-
-REDIRSERVER="http://localhost:8080/redirect.php?name=$NAME&password=$PASSWORD&url=$IOTURLENC"
+# wait "loop" in case of service repeated restart if curl exists with an error
+sleep 5
+REDIRSERVER="$REDIR?name=$NAME&password=$PASSWORD&url=$IOTURLENC"
 #curl --silent $REDIRSERVER > /dev/null
 echo $REDIRSERVER
 curl  $REDIRSERVER 
+exit $?
