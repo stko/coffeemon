@@ -1,9 +1,9 @@
 #!/bin/bash
-REDIR=$(grep -i redirURL $1 | cut -d = -f 2)
-NAME=$(grep -i name $1 | cut -d = -f 2)
-PASSWORD=$(grep -i password $1 | cut -d = -f 2)
-WSURL=$(grep -i wsurl $1 | cut -d = -f 2)
-PORT=$(grep -i port $1 | cut -d = -f 2)
+REDIR=$(/bin/grep -i redirURL $1 | /usr/bin/cut -d = -f 2)
+NAME=$(/bin/grep -i name $1 | /usr/bin/cut -d = -f 2)
+PASSWORD=$(/bin/grep -i password $1 | /usr/bin/cut -d = -f 2)
+WSURL=$(/bin/grep -i wsurl $1 | /usr/bin/cut -d = -f 2)
+PORT=$(/bin/grep -i port $1 | /usr/bin/cut -d = -f 2)
 
 
 if [ -z "$REDIR" -o -z "$NAME" -o -z "$PASSWORD" ]; then
@@ -12,7 +12,8 @@ fi
 if [ -z "$PORT"  ]; then
         PORT=80
 fi
-MYIP=$(ifconfig eth0 | grep -i "inet ad" | cut -d ':' -f 2 | cut -d ' ' -f 1)
+#MYIP=$(ifconfig eth0 | grep -i "inet " | cut -d ':' -f 2 | cut -d ' ' -f 1)
+MYIP=$(/sbin/ifconfig eth0 | /bin/grep -i "inet " | /urs/bin/cut -d ' ' -f 10)
 
 # automated url encoding thanks to https://stackoverflow.com/a/10660730
 rawurlencode() {
@@ -29,7 +30,7 @@ rawurlencode() {
      esac
      encoded+="${o}"
   done
-  echo "${encoded}"    # You can either set a return variable (FASTER) 
+  /bin/echo "${encoded}"    # You can either set a return variable (FASTER) 
   REPLY="${encoded}"   #+or echo the result (EASIER)... or both... :p
 }
 ### if your webservice runs on another server and/or port, uncomment and configure it here
@@ -43,9 +44,9 @@ IOTURL=http://$MYIP:$PORT?wsurl=$WSURLENC
 
 IOTURLENC=$( rawurlencode "$IOTURL" )
 # wait "loop" in case of service repeated restart if curl exists with an error
-sleep 5
+/bin/sleep 5
 REDIRSERVER="$REDIR?name=$NAME&password=$PASSWORD&url=$IOTURLENC"
 #curl --silent $REDIRSERVER > /dev/null
-echo $REDIRSERVER
-curl  $REDIRSERVER 
+/bin/echo $REDIRSERVER
+/usr/bin/curl  $REDIRSERVER 
 exit $?
