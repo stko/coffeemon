@@ -15,7 +15,8 @@ joe \
 nano \
 python3-pip \
 usbmount \
-lighttpd php-common php-cgi php
+lighttpd php-common php-cgi php \
+python-rpi.gpio python3-rpi.gpio python-numpy python3-numpy 
 
 ## begin unisonfs overlay file system (http://blog.pi3g.com/2014/04/make-raspbian-system-read-only/)
 
@@ -61,6 +62,8 @@ sudo lighty-enable-mod fastcgi
 sudo lighty-enable-mod fastcgi-php
 sudo service lighttpd force-reload
 
+#sudo pip3 install numpy
+
 
 # Read-Only Image instructions thankfully copied from https://kofler.info/raspbian-lite-fuer-den-read-only-betrieb/
 
@@ -74,9 +77,6 @@ mv coffeemon-master coffeemon
 sudo cp -r coffeemon/www/* /var/www/html
 sudo mkdir /etc/coffeemon
 sudo cp coffeemon/scripts/cmsettings_sample.cfg /etc/coffeemon/settings.ini
-
-wget  https://github.com/tatobari/hx711py/archive/master.zip -O hx711py.zip && unzip hx711py.zip
-cp hx711py-master/hx711.py coffeemon/scripts
 
 chmod a+x /home/pi/coffeemon/scripts/*.sh
 
@@ -126,7 +126,9 @@ cat << 'EOF' | sudo tee  /etc/systemd/system/cmannounce.service
 [Unit]
 Description=Triggers announces device on redirect server, if settings file exists
 ConditionFileNotEmpty=/etc/coffeemon/settings.ini
-Wants=network.target
+Wants=network-online.target
+After=network.target network-online.target
+
 
 [Service]
 ExecStart=/home/pi/coffeemon/scripts/announceDevice.sh /etc/coffeemon/settings.ini
@@ -155,8 +157,8 @@ EOF
 sudo systemctl enable cmannounce 
 sudo systemctl enable coffeemon
 
-echo "Your actual config"
-sudo nano /etc/coffeemon/settings.ini
+#echo "Your actual config"
+#sudo nano /etc/coffeemon/settings.ini
 
 
 
