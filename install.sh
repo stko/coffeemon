@@ -12,6 +12,7 @@ cd
 sudo apt-get update --assume-yes
 sudo apt-get install --assume-yes \
 joe \
+nano \
 python3-pip \
 usbmount \
 lighttpd php-common php-cgi php
@@ -71,6 +72,8 @@ sudo apt-get autoremove --purge --assume-yes
 wget  https://github.com/stko/coffeemon/archive/master.zip -O coffeemon.zip && unzip coffeemon.zip
 mv coffeemon-master coffeemon
 sudo cp -r coffeemon/www/* /var/www/html
+sudo mkdir /etc/coffeemon
+sudo cp coffeemon/scripts/cmsettings_sample.cfg /etc/coffeemon/settings.ini
 
 wget  https://github.com/tatobari/hx711py/archive/master.zip -O hx711py.zip && unzip hx711py.zip
 cp hx711py-master/hx711.py coffeemon/scripts
@@ -102,8 +105,7 @@ proc            /proc           proc    defaults          0       0
 ##tmpfs	/var/log	tmpfs	nodev,nosuid	0	0
 ##tmpfs	/var/tmp	tmpfs	nodev,nosuid	0	0
 tmpfs	/tmp	tmpfs	nodev,nosuid	0	0
-tmpfs	/oobd	tmpfs	nodev,nosuid	0	0
-/dev/sda1       /media/usb0     vfat    ro,defaults,nofail,x-systemd.device-timeout=1   0       0
+#/dev/sda1       /media/usb0     vfat    ro,defaults,nofail,x-systemd.device-timeout=1   0       0
 
 
 mount_unionfs   /etc            fuse    defaults          0       0
@@ -128,7 +130,7 @@ Wants=network.target
 
 [Service]
 ExecStart=/home/pi/coffeemon/scripts/announceDevice.sh /etc/coffeemon/settings.ini
-Restart=on-abort
+Restart=on-failure
 
 [Install]
 WantedBy=default.target
@@ -149,32 +151,41 @@ WantedBy=default.target
 
 EOF
 
-cat << 'EOF' | sudo tee  /etc/systemd/system/cmsettings.service
-[Unit]
-Description=copy CoffeeMon settings from USB
-Before= coffeemon.service  cmannounce.service
-RequiresMountsFor=/media/usb
-
-[Service]
-ExecStart="/bin/mkdir /etc/coffeemon ; /bin/cp /media/usb/settings.ini /etc/coffeemon"
-Type=oneshot
-
-[Install]
-WantedBy=default.target
-
-EOF
-
-
 
 sudo systemctl enable cmannounce 
 sudo systemctl enable coffeemon
-sudo systemctl enable cmsettings
+
+echo "Your actual config"
+sudo nano /etc/coffeemon/settings.ini
+
+
 
 #Prepare unisonfs  directories
 sudo cp -al /etc /etc_org
 sudo mv /var /var_org
 sudo mkdir /etc_rw
 sudo mkdir /var /var_rw
+
+
+#PS3='Please take your choice: '
+#options=("show config" "edit config" "Quit")
+#select opt in "${options[@]}"
+#	do
+#		case $opt in
+#			"show config")
+#				more /etc/coffeemon/settings.ini
+#
+#			;;
+#			"edit config")
+#				sudo nano /etc/coffeemon/settings.ini
+#
+#			;;
+#			"Quit")
+#				break
+#			;;
+#			*) echo invalid option;;
+#		esac
+#	done
 
 cat << 'EOF'
 Installation finished
@@ -196,4 +207,7 @@ have fun :-)
 the CoffeeMon team
 EOF
 
+sync
+sync
+sync
 

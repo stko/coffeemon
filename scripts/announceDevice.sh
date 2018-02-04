@@ -13,7 +13,7 @@ if [ -z "$PORT"  ]; then
         PORT=80
 fi
 #MYIP=$(ifconfig eth0 | grep -i "inet " | cut -d ':' -f 2 | cut -d ' ' -f 1)
-MYIP=$(/sbin/ifconfig eth0 | /bin/grep -i "inet " | /urs/bin/cut -d ' ' -f 10)
+MYIP=$(/sbin/ifconfig eth0 | /bin/grep -i "inet " | /usr/bin/cut -d ' ' -f 10)
 
 # automated url encoding thanks to https://stackoverflow.com/a/10660730
 rawurlencode() {
@@ -47,6 +47,6 @@ IOTURLENC=$( rawurlencode "$IOTURL" )
 /bin/sleep 5
 REDIRSERVER="$REDIR?name=$NAME&password=$PASSWORD&url=$IOTURLENC"
 #curl --silent $REDIRSERVER > /dev/null
-/bin/echo $REDIRSERVER
-/usr/bin/curl  $REDIRSERVER 
+/bin/echo "$REDIRSERVER"
+/usr/bin/curl  "$REDIRSERVER" 
 exit $?
