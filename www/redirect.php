@@ -38,6 +38,8 @@ function safefilerewrite($fileName, $dataToSave)
         fclose($fp);
     }
 }
+$iniFileName="settings.ini";
+$ini_array = parse_ini_file($iniFileName);
 
 if (isset($_GET['name']))
 {
@@ -45,8 +47,6 @@ if (isset($_GET['name']))
 	// url
 	// name
 	// password
-	$iniFileName="settings.ini";
-	$ini_array = parse_ini_file($iniFileName);
 	// request to store IP
 	if($_GET['password']==$passwd and isset($_GET['url']))
 	{
@@ -73,8 +73,12 @@ Let you register IoT devices with changing IP addresses on a server with fixed U
 To register a device, call this page with a GET call containing the parameters: name: The name the device should be reached by /url: the urlencoded URL to which it should be redirected to / password= the password as configured
 <p>
 To get forwarded to a registered device, call this page with a GET call containing the parameter name: The name the device should be reached by
-</body>
-</html>
+<p>
 <?php
+    foreach ($ini_array as $key => $value) {
+        echo "<a href='".basename(__FILE__)."?name=".urlencode ($key)."'>".$key."</a><br>";
+     }
 }
 ?>
+</body>
+</html>
